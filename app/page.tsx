@@ -1,6 +1,17 @@
 import Link from "next/link";
+import FormPost from "./Form";
 
-export default function Home() {
+async function getPosts() {
+  const res = await fetch(`${process.env.BASE_URL}/api/getPosts`);
+  if (!res.ok) {
+    console.log(res);
+  }
+  return res.json();
+}
+
+export default async function Home() {
+  const data: { id: number; title: string }[] = await getPosts();
+
   return (
     <main className="py-8 px-48">
       <Link
@@ -9,6 +20,14 @@ export default function Home() {
       >
         Go to Dashboard
       </Link>
+      <FormPost />
+      {!data.length
+        ? null
+        : data.map((post) => (
+            <h3 className="text-lg py-6" key={post.id}>
+              {post.title}
+            </h3>
+          ))}
     </main>
   );
 }
